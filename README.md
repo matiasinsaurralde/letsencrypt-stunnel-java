@@ -22,7 +22,7 @@ Clone this repository first :)
 
 ```
 % cd ~
-% git clone URL
+% git clone https://github.com/matiasinsaurralde/letsencrypt-stunnel-java.git
 ```
 
 Please follow the Let's Encrypt guide and run the right commands for your domain/FQDN:
@@ -73,7 +73,7 @@ This program will listen for incoming connections on TCP port 9090 and we should
 It would be good to keep it running with the following command:
 
 ```
-% cd ~/letsencrypt-experiment
+% cd ~/letsencrypt-stunnel-java
 % node SampleEchoServer.js
 ```
 
@@ -158,15 +158,14 @@ At this point we have a funny, SSL-speaking, echo server that is being exposed t
 The final idea is to prepare a Java client that will connect and send some "Hello world" to our echo server. There's a quick & dirty Java client inside this repo, and you should find it in the root directory:
 
 ```
-% cd ~
-% cd dir
+% cd ~/letsencrypt-stunnel-java
 % javac SampleEchoClient.java
 ```
 
 We are ready to run the echo client, but Java doesn't know about the Let's Encrypt certificates. The ```keytool``` can generate a keystore for us, please follow the wizard and choose a password:
 
 ```
-% cd ~    # just in case
+% cd ~/letsencrypt-stunnel-java    # just in case
 % keytool -keystore samplekeystore -genkey
 ```
 
