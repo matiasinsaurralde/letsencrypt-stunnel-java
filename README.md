@@ -1,7 +1,12 @@
 Let's Encrypt + stunnel
 ==
-
 This is a step by step guide to setup a TCP socket server under stunnel (using Let's Encrypt).
+
+I started this experiment because someone requested my help on a Java application SSL setup. This application used a standard TCP socket and instead of natively using ```SSLServerSocket``` I wanted to try out two cool projects: [stunnel](https://www.stunnel.org/index.html) & [Let's Encrypt](https://letsencrypt.org/).
+
+I prepared a quick class for wrapping the standard SSLSocketFactory and providing an easier way of loading a custom ```KeyStore``` that holds the trusted Let's Encrypt certificates.
+
+***Disclaimer:*** I think there's already [some kind of library for quickly integrating Let's Encrypt with Java](https://github.com/shred/acme4j) and you may find it useful, however I'm not a Java developer myself ~~and I'm not sure about how to use Maven at all lol~~.
 
 # Requirements
 
@@ -9,10 +14,11 @@ This is a step by step guide to setup a TCP socket server under stunnel (using L
 - stunnel
 - NodeJS
 - Java
+- Laziness
 
 ## First step
 
-Clone this repository first:
+Clone this repository first :)
 
 ```
 % cd ~
