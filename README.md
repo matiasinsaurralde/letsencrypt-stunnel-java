@@ -1,4 +1,4 @@
-Let's Encrypt + stunnel
+Let's Encrypt + stunnel + Java
 ==
 This is a step by step guide to setup a TCP socket server under stunnel (using Let's Encrypt).
 
@@ -153,6 +153,46 @@ The output should include ~~very cool alphanumeric stuff~~ the certificates and 
 
 ## Preparing our Java client
 
-At this point we have a funny, SSL-speaking, echo server that is being exposed through all your interfaces (maybe the Internet?).
+At this point we have a funny, SSL-speaking, echo server that is being exposed through all your interfaces (maybe the Internet?). I'll assume that your Java environment is ready.
 
-The final idea is to prepare a Java client
+The final idea is to prepare a Java client that will connect and send some "Hello world" to our echo server. There's a quick & dirty Java client inside this repo, and you should find it in the root directory:
+
+```
+% cd ~
+% cd dir
+% javac SampleEchoClient.java
+```
+
+We are ready to run the echo client, but Java doesn't know about the Let's Encrypt certificates. The ```keytool``` can generate a keystore for us, please follow the wizard and choose a password:
+
+```
+% cd ~    # just in case
+% keytool -keystore samplekeystore -genkey
+```
+
+Let's fetch and store the Let's Encrypt certificates in this keystore:
+
+```
+% wget https://letsencrypt.org/certs/isrgrootx1.pem
+% wget https://letsencrypt.org/certs/letsencryptauthorityx1.der
+% keytool -keystore samplekeystore -trustcacerts -importcert -alias isrgrootx1 -file isrgrootx1.pem
+% keytool -keystore samplekeystore -trustcacerts -importcert -alias letsencryptauthorityx1 -file letsencryptauthorityx1.der
+```
+
+The ```keytool``` will ask for the keystore password and a confirmation. I used ```123456```.
+
+Let's try to run the Java program, and override (or specify the new keystore). ```javax.net.ssl.keyStore``` indicates the path of our new keystore, and ```javax.net.ssl.keyStorePassword``` indicates the previously set keystore password.
+
+```
+% java -Djavax.net.ssl.keyStore=samplekeystore -Djavax.net.ssl.keyStorePassword=123456 SampleEchoClient
+```
+
+If everything is ok, the echo should work:
+
+```
+% java -Djavax.net.ssl.keyStore=samplekeystore -Djavax.net.ssl.keyStorePassword=123456 SampleEchoClient
+hello
+Receiving: hello
+bye
+Receiving: bye
+```
