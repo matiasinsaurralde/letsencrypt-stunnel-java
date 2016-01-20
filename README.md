@@ -35,12 +35,12 @@ https://letsencrypt.org/howitworks/
 % cd letsencrypt
 ```
 
-In this case we won't be using the Apache option in the Let's Encrypt Wizard, so just run something like after installing
+In this case we won't be using the Apache option provided by the Let's Encrypt wizard, so just run something like this:
 
 ```
 % ./letsencrypt-auto certonly --standalone -d example.com -d www.example.com
 ```
-In my case I did something like this (I'm using a single subdomain):
+In my case I did (I'm using a single subdomain):
 ```
 % ./letsencrypt-auto certonly --standalone -d ssltest.insaurral.de
 ```
@@ -92,3 +92,67 @@ Install it:
 ```
 % apt-get install stunnel -y
 ```
+
+stunnel has been installed. We need to create a configuration file inside the stunnel configuration directory (usually ```/etc/stunnel```), the path could be: ```/etc/stunnel/echo.conf``` or ```/etc/stunnel/something.conf```.
+
+stunnel will load all the available *.conf files.
+
+The important stuff goes inside that file (thank you [crow](https://community.letsencrypt.org/t/configure-stunnel/3611)):
+
+```
+accept=0.0.0.0:9091
+connect=127.0.0.1:9090
+ciphers=ECDHE-RSA-AES256-GCM-SHA384:ECDHE-RSA-AES128-GCM-SHA256:ECDHE-RSA-AES256-SHA384:ECDHE-RSA-AES256-SHA:EC
+DHE-RSA-AES128-SHA256:ECDHE-RSA-AES128-SHA:AES256-GCM-SHA384:AES128-GCM-SHA256:AES256-SHA256:AES128-SHA256:AES1
+28-SHA:DES-CBC3-SHA
+options=CIPHER_SERVER_PREFERENCE
+```
+
+We are telling stunnel to listen on all the available interfaces, port 9091.
+
+And that we are expecting to forward those connections to 127.0.0.1, port 9090 (this is the actual echo server that speaks unencrypted stuff), using the [specified ciphers](https://github.com/letsencrypt/letsencrypt/blob/74b2e3bc515b5f7e805883a26f1b0e47ed686098/letsencrypt-nginx/letsencrypt_nginx/options-ssl-nginx.conf#L8).
+
+In my installation I wasn't able to get stunnel running just after the previous steps.
+I needed to change the ```ENABLED``` in ```/etc/default/stunnel4```:
+
+```
+# /etc/default/stunnel
+# Julien LEMOINE <speedblue@debian.org>
+# September 2003
+
+# Change to one to enable stunnel automatic startup
+ENABLED=1
+FILES="/etc/stunnel/*.conf"
+OPTIONS=""
+
+# Change to one to enable ppp restart scripts
+PPP_RESTART=0
+```
+And finally:
+
+```
+% service stunnel4 start
+Starting SSL tunnels: [Started: /etc/stunnel/echo.conf] stunnel.
+```
+
+## Checking the server
+
+OpenSSL provides a way of checking the certificates associated with a specific server, something like:
+
+```
+openssl s_client -connect example.com:9091 -showcerts
+```
+
+In my case:
+
+```
+openssl s_client -connect ssltest.insaurral.de:9091 -showcerts
+```
+
+The output should include ~~very cool alphanumeric stuff~~ the certificates and information about the issuer, you should read ***Let's Encrypt*** somewhere around the ```Server certificate``` section.
+
+## Preparing our Java client
+
+At this point we have a funny, SSL-speaking, echo server that is being exposed through all your interfaces (maybe the Internet?).
+
+The final idea is to prepare a Java client
