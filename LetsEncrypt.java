@@ -8,11 +8,11 @@ import javax.net.ssl.SSLContext;
 import java.security.KeyStore;
 
 class LetsEncrypt {
-  public static SSLSocketFactory SocketFactory() throws Exception {
+  public static SSLSocketFactory SocketFactory( String keystorePath, String keystorePassword ) throws Exception {
 
     KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
-    InputStream readStream = new FileInputStream( "keystore" );
-    keystore.load( readStream, "".toCharArray() );
+    InputStream readStream = new FileInputStream( "/Users/matias/.keystore" );
+    keystore.load( readStream, "123456".toCharArray() );
 
     TrustManagerFactory tmf = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
     tmf.init(keystore);
@@ -27,7 +27,12 @@ class LetsEncrypt {
     return factory;
   }
 
+  public static SSLSocketFactory SocketFactory() throws Exception {
+    return SocketFactory( "", "" );
+  }
+
   public static void main( String[] args ) {
+
     try {
       SSLSocketFactory factory = LetsEncrypt.SocketFactory();
     } catch( Exception e ) {
