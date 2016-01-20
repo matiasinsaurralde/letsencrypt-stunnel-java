@@ -1,3 +1,5 @@
+package letsencrypt;
+
 import java.io.InputStream;
 import java.io.FileInputStream;
 
@@ -7,7 +9,7 @@ import javax.net.ssl.SSLContext;
 
 import java.security.KeyStore;
 
-class LetsEncrypt {
+public class LetsEncrypt {
   public static SSLSocketFactory SocketFactory( String keyStorePath, String keyStorePassword ) throws Exception {
 
     KeyStore keystore = KeyStore.getInstance(KeyStore.getDefaultType());
@@ -34,14 +36,4 @@ class LetsEncrypt {
     return SocketFactory( keyStorePath, keyStorePassword );
   }
 
-  public static void main( String[] args ) {
-
-    try {
-      SSLSocketFactory factory = LetsEncrypt.SocketFactory();
-      // or...
-      // SSLSocketFactory factory = LetsEncrypt.SocketFactory( "/tmp/mykeystore", "123456");
-    } catch( Exception e ) {
-      System.out.println( e );
-    }
-  }
 }
