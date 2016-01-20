@@ -7,7 +7,7 @@ import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
 
-class SampleClient {
+class SampleEchoClient {
 
   static SSLSocketFactory factory;
   static SSLSocket socket;
@@ -16,7 +16,7 @@ class SampleClient {
 
     try {
       factory = LetsEncrypt.SocketFactory();
-      socket = (SSLSocket) factory.createSocket( "ssltest.gdgasuncion.org", 9091);
+      socket = (SSLSocket) factory.createSocket( "ssltest.insaurral.de", 9091);
 
       PrintWriter out = new PrintWriter( socket.getOutputStream(), true);
 
